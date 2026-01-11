@@ -19,10 +19,10 @@ class MainViewModel : ViewModel() {
     val cartCount: StateFlow<Int> = cartCountFlow.asStateFlow()
 
     init {
-        loadprod()
+        loadProd()
     }
 
-    private fun loadprod() {
+    private fun loadProd() {
         // Simulating data loading
         productListFlow.value = listOf(
             GamingProduct(1, "PlayStation 5", "$499", Icons.Default.Tv),

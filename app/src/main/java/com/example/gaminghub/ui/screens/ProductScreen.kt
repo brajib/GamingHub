@@ -16,7 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gaminghub.ViewModel.MainViewModel
 import com.example.gaminghub.model.GamingProduct
 
@@ -116,4 +118,10 @@ fun ProductItem(product: GamingProduct, onAddToCart: () -> Unit) {
             }
         }
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun ProductScreenPreview() {
+    val dummyViewModel: MainViewModel = viewModel()
+    ProductScreen(viewModel = dummyViewModel)
 }

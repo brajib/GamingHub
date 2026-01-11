@@ -10,10 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.gaminghub.ViewModel.MainViewModel
-import com.example.gaminghub.ui.screens.LoginScreen
 import com.example.gaminghub.ui.screens.ProductScreen
-import com.example.gaminghub.ui.screens.SignUpScreen
 import com.example.gaminghub.ui.theme.GamingHubTheme
+import com.example.yourappname.ui.screens.LoginScreen
+import com.example.yourappname.ui.screens.SignUpScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

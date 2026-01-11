@@ -1,4 +1,4 @@
-package com.example.gaminghub.ui.screens
+package com.example.yourappname.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,11 +7,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -20,127 +22,132 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.Composable
 
 @Composable
 fun LoginScreen(
     onNavigateToSignUp: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
-    // State to hold input values
+    // 1. State for Inputs
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    // 2. State for Validation Errors
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    // 3. Validation Logic Helper
+    fun validateInputs(): Boolean {
+        var isValid = true
+
+        // Check Email
+        if (email.isBlank()) {
+            emailError = "Email cannot be empty"
+            isValid = false
+        } else if (!email.contains("@gmail.com")) {
+            emailError = "Invalid email address"
+            isValid = false
+        } else {
+            emailError = null
+        }
+
+        // Check Password
+        if (password.length < 6) {
+            passwordError = "Password must be at least 6 characters"
+            isValid = false
+        } else {
+            passwordError = null
+        }
+
+        return isValid
+    }
+
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp), // Outer padding
+            modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-            // Header / Title
             Text(
-                text = "The Gaming Hub",
+                text = "Welcome Back",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
 
-            Text(
-                text = "Login to your account",
-                fontSize = 16.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
-            )
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Email Input Field
+            // EMAIL INPUT
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
-                label = { Text("Email Address") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Email, contentDescription = "Email Icon")
+                onValueChange = {
+                    email = it
+                    if (emailError != null) emailError = null // Clear error when typing
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
+                label = { Text("Email Address") },
+                leadingIcon = { Icon(Icons.Default.Email, "Email") },
+                isError = emailError != null, // Highlights red if error
+                supportingText = { // Shows error text below field
+                    if (emailError != null) {
+                        Text(text = emailError!!, color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                trailingIcon = {
+                    if (emailError != null) Icon(Icons.Default.Error, "Error", tint = MaterialTheme.colorScheme.error)
+                },
+                modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Password Input Field
+            // PASSWORD INPUT
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    if (passwordError != null) passwordError = null
+                },
                 label = { Text("Password") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock Icon")
+                leadingIcon = { Icon(Icons.Default.Lock, "Lock") },
+                isError = passwordError != null,
+                supportingText = {
+                    if (passwordError != null) {
+                        Text(text = passwordError!!, color = MaterialTheme.colorScheme.error)
+                    }
                 },
                 trailingIcon = {
                     val icon = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                     IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(imageVector = icon, contentDescription = "Toggle Password Visibility")
+                        Icon(icon, "Toggle Visibility")
                     }
                 },
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Forgot Password Link
-            Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    text = "Forgot Password?",
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .clickable { /* Handle forgot password logic */ }
-                )
-            }
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done)
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Login Button
+            // LOGIN BUTTON
             Button(
-                onClick = { /* Handle Login Logic Here */
-                    if (email.isNotEmpty() && password.isNotEmpty()) {
-                        onLoginSuccess()
+                onClick = {
+                    if (validateInputs()) {
+                        onLoginSuccess() // Navigate only if valid
                     }
                 },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(text = "Login", fontSize = 18.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Sign Up Option
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row {
                 Text(text = "Don't have an account? ")
                 Text(
                     text = "Sign Up",
